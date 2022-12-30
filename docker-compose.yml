@@ -9,6 +9,20 @@ services:
     networks:
       - money-manager-network
 
+  client:
+    build:
+      dockerfile: ./docker/client/Dockerfile
+      context: .
+    tty: true
+    stdin_open: true
+    command: sh /docker-entrypoint.sh
+    volumes: 
+      - ./client/.:/app
+    ports:
+      - ${CLIENT_HOST_PORT}:3000
+    networks:
+      - money-manager-network
+
   api:
     build:
       dockerfile: ./docker/api/Dockerfile

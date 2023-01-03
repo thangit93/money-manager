@@ -19,8 +19,29 @@ services:
     tty: true
     stdin_open: true
     command: sh /docker-entrypoint.sh
+    environment:
+      HOST: 0.0.0.0
+      ENVIROMENT: ${ENVIROMENT:-DEV}
     volumes: 
       - ./api/.:/app
+    networks:
+      - money-manager-network
+
+  client:
+    build:
+      dockerfile: ./docker/client/Dockerfile
+      context: .
+      args:
+        DOCKER_UID: ${DOCKER_UID:-0}
+        DOCKER_GID: ${DOCKER_GID:-0}
+    tty: true
+    stdin_open: true
+    command: sh /docker-entrypoint.sh
+    environment:
+      HOST: 0.0.0.0
+      ENVIROMENT: ${ENVIROMENT:-DEV}
+    volumes: 
+      - ./client/.:/app
     networks:
       - money-manager-network
 

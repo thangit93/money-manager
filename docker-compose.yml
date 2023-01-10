@@ -26,6 +26,22 @@ services:
       - ./api/.:/app
     networks:
       - money-manager-network
+      - money-manager-db-network
+
+  mongodb:
+    image: mongo:6.0.3-focal
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE:-money_manager}
+    ports:
+      - ${MONGODB_PORT:-27017}:27017
+    volumes:
+      - mongodb-vol:/data/db
+      - ./docker/mongodb/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - money-manager-db-network
 
   client:
     build:
@@ -53,13 +69,17 @@ services:
     ports:
       - ${REDIS_HOST_PORT}:6379
     networks:
-      - money-manager-network
+      - money-manager-db-network
 
 
 networks:
   money-manager-network:
     driver: bridge
+  money-manager-db-network:
+    driver: bridge
 
 volumes:
+  mongodb-vol:
+    driver: local
   redis-vol:
     driver: local
